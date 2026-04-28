@@ -175,3 +175,15 @@ def get_note(note_id: int):
         status_code=404,
         detail=f"Note with ID {note_id} not found"
     )
+
+# Add Delete Endpoint
+@app.delete("/notes/{note_id}")
+def delete_note(note_id: int):
+    """Delete a note by ID"""
+    for i, note in enumerate(notes_db):
+        if note.id == note_id:
+            notes_db.pop(i)
+            save_notes()
+            return {"message": "Note deleted"}
+    
+    raise HTTPException(404, "Note not found")
