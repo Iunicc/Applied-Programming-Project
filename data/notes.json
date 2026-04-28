@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "title": "Einkaufen",
+    "content": "Milch, Eier, Mehl",
+    "category": "default",
+    "created_at": "2026-04-28T11:58:21.553842"
+  },
+  {
+    "id": 2,
+    "title": "string",
+    "content": "string",
+    "category": "default",
+    "created_at": "2026-04-28T12:06:47.740692"
+  },
+  {
+    "id": 3,
+    "title": "Hallp",
+    "content": "blabla, bkabak",
+    "category": "default",
+    "created_at": "2026-04-28T12:07:11.839392"
+  },
+  {
+    "id": 4,
+    "title": "TO DO MONTAG",
+    "content": "Arbeit, Einkaufen, Kochen",
+    "category": "To Dos",
+    "created_at": "2026-04-28T12:40:45.787393"
+  },
+  {
+    "id": 5,
+    "title": "TO DOS DIENSTAG",
+    "content": "Arbeit, Tante besuchen, Kuchen backen",
+    "category": "To Dos",
+    "created_at": "2026-04-28T12:41:39.945797"
+  }
+]
