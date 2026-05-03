@@ -1,23 +1,20 @@
 [
   {
     "id": 1,
-    "title": "Einkaufen",
-    "content": "Milch, Eier, Mehl",
-    "category": "default",
+    "title": "Updated Title",
+    "content": "New content",
+    "category": "personal",
+    "tags": [
+      "updated"
+    ],
     "created_at": "2026-04-28T11:58:21.553842"
-  },
-  {
-    "id": 2,
-    "title": "string",
-    "content": "string",
-    "category": "default",
-    "created_at": "2026-04-28T12:06:47.740692"
   },
   {
     "id": 3,
     "title": "Hallp",
     "content": "blabla, bkabak",
     "category": "default",
+    "tags": [],
     "created_at": "2026-04-28T12:07:11.839392"
   },
   {
@@ -25,6 +22,7 @@
     "title": "TO DO MONTAG",
     "content": "Arbeit, Einkaufen, Kochen",
     "category": "To Dos",
+    "tags": [],
     "created_at": "2026-04-28T12:40:45.787393"
   },
   {
@@ -32,6 +30,37 @@
     "title": "TO DOS DIENSTAG",
     "content": "Arbeit, Tante besuchen, Kuchen backen",
     "category": "To Dos",
+    "tags": [],
     "created_at": "2026-04-28T12:41:39.945797"
+  },
+  {
+    "id": 6,
+    "title": "reisedokumente",
+    "content": "reisepass, perso, arbeitserlaubnis",
+    "category": "arbeit",
+    "tags": [],
+    "created_at": "2026-05-03T13:18:40.889869"
+  },
+  {
+    "id": 8,
+    "title": "Team Meeting",
+    "content": "Discuss Q2 goals",
+    "category": "work",
+    "tags": [
+      "meeting",
+      "urgent"
+    ],
+    "created_at": "2026-05-03T13:57:00.226829"
+  },
+  {
+    "id": 9,
+    "title": "Test Note",
+    "content": "Das ist ein Test",
+    "category": "test",
+    "tags": [
+      "urgent",
+      "demo"
+    ],
+    "created_at": "2026-05-03T15:23:21.586058"
   }
 ]

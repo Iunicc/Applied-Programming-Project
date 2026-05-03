@@ -18,8 +18,6 @@ _Reflect on the activities, exercises, and work you completed today._
 - What tools or technologies did you use?
 - What did you learn or practice?
 
-
-
 ---
 
 ## 2. 🚧 What challenges did I face?
@@ -31,9 +29,6 @@ _Describe any difficulties, obstacles, or confusing moments you encountered._
 - Where did you get stuck?
 - What errors or problems did you face?
 - What felt frustrating or confusing?
-
-
-
 
 ---
 
@@ -55,28 +50,27 @@ _Explain how you overcame the challenges or what help you needed._
 ### Day 1
 
 #### 1. ✅ What did I accomplish?
-
-
-
-
-
+- Entwicklungsumgebung eingerichtet (VS Code, Git, uv)
+- Git installiert und Unterschied zu GitHub gelernt
+- uv als neuen Package Manager kennengelernt
+- erstes FastAPI Projekt erstellt
+- „Hello World“ programmiert
+- API im Browser und in /docs getestet
+- mehrere einfache Endpoints erstellt
+- Hausaufgabe gemacht (Zahl mit +1 addiert)
 
 ---
 
 #### 2. 🚧 What challenges did I face?
-
-
-
-
-
+- Installation von Git auf dem Mac war etwas unübersichtlich
+- Homebrew war neu für mich
+- am Anfang unsicher, wie alles zusammenhängt (API, Server, Browser)
 
 ---
 
 #### 3. 💡 How did I overcome them?
-
-
-
-
+- Hilfe von einem Kommilitonen bei Git und Homebrew bekommen
+- durch die ersten kleinen Programme besser verstanden, wie APIs funktionieren
 
 
 ---
@@ -84,28 +78,29 @@ _Explain how you overcame the challenges or what help you needed._
 ### Day 2
 
 #### 1. ✅ What did I accomplish?
-
-
-
-
-
+- Grundlagen zu APIs, HTTP und JSON gelernt
+- mit FastAPI eine eigene Note Taking API erstellt
+- POST Endpoint gebaut, um Notizen anzulegen
+- GET Endpoint gebaut, um alle Notizen anzuzeigen
+- GET Endpoint mit ID erstellt, um einzelne Notizen abzurufen
+- Daten mit JSON-Datei gespeichert
+- Hausaufgabe eingebaut
+- Bonus Challenge eingebaut: Delete Endpoint implementiert
 
 ---
 
 #### 2. 🚧 What challenges did I face?
-
-
-
-
-
+- Internal Server Error beim Erstellen von Notizen
+- Probleme beim Speichern in die JSON-Datei
+- Unsicherheit, wo genau Code ergänzt werden muss
 
 ---
 
 #### 3. 💡 How did I overcome them?
-
-
-
-
+- mit Kommilitone den Fehler im POST Endpoint gefunden (save_notes() hat gefehlt)
+- verstanden, dass Daten nach dem Erstellen gespeichert werden müssen
+- Code Schritt für Schritt mit der Präsentation verglichen
+- ChatGPT genutzt, um Fehlermeldungen zu verstehen und mir Code erklären zu lassen und an richtigen Stellen einzusetzen
 
 
 ---

@@ -1,1 +1,1 @@
-# API Project
+# Run FastAPI: uv run fastapi dev
