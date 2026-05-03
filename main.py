@@ -7,7 +7,8 @@ from datetime import datetime, timezone
 datetime.now(timezone.utc).isoformat()
 import json
 from pathlib import Path
-
+from collections import Counter             # <- Homework Day 3
+from typing import Optional                 # <- Homework Day 3
 
 ########################################
 # DATA MODELS
@@ -26,6 +27,11 @@ class Note(BaseModel):
     tags: list[str] = []    # <- Day 3
     created_at: str
 
+class NoteUpdate(BaseModel):            # <- Homework Day 3
+    title: Optional[str] = None
+    content: Optional[str] = None
+    category: Optional[str] = None
+    tags: Optional[list[str]] = None
 
 ########################################
 # STORAGE
@@ -114,6 +120,7 @@ def create_note(note: NoteCreate):      # Function takes NoteCreate model
 
     return new_note                     # Return created note
 
+
 #--------------------------------
 # Read: GET -> Read Notes
 #--------------------------------
@@ -128,7 +135,9 @@ List notes with optional filters
 def list_notes(
     category: str = None,
     search: str = None,
-    tag: str = None
+    tag: str = None,
+    created_after: str = None,      # <- Homework Day 3
+    created_before: str = None      # <- Homework Day 3
 ) -> list[Note]:
    
     load_notes()
@@ -152,17 +161,25 @@ def list_notes(
         if tag and tag not in note.tags:
             continue
         
+        # Homework Day 3
+        # Filter by date
+        if created_after and note.created_at < created_after:
+            continue
+
+        if created_before and note.created_at > created_before:
+            continue
+
         filtered.append(note)
     
     return filtered
 
 #--------------------------------
-# Read: GET -> Get Stats
+# Read: GET -> Get Stats about Notes
 #--------------------------------
 @app.get("/notes/stats")
 def get_notes_stats():
-    """Get statistics about notes"""
-    
+    load_notes()
+
     # Count by category
     categories = {}
     for note in notes_db:
@@ -170,11 +187,31 @@ def get_notes_stats():
             categories[note.category] += 1
         else:
             categories[note.category] = 1
-    
+
+    # Top Tags: Count tags, then fnd most common (Counter objects)
+    # Homework Day 3
+    tags_count = Counter()
+    for note in notes_db:
+        for word in note.tags:
+            tags_count[word] += 1
+    top_tags = tags_count.most_common(10)
+
+    # Unique tags count: Count tags only once, then addition
+    # Homework Day 3
+    unique = {}
+    for note in notes_db:
+        for word in note.tags:
+            if word not in unique:
+                unique[word] = 1        
+    unique_tags_count = len(unique)
+
     return {
         "total_notes": len(notes_db),
-        "by_category": categories
+        "by_categoriy": categories,
+        "top_tags": top_tags,
+        "unique_tags_count": unique_tags_count
     }
+
 
 #--------------------------------
 # Read: GET -> Get Notes by ID
@@ -207,6 +244,7 @@ def get_notes_by_category(category: str):
     
     return filtered_notes
 
+
 #--------------------------------
 # Read: GET -> Get all exisitng Tags
 #--------------------------------
@@ -226,6 +264,7 @@ def list_tags() -> list[str]:
     # Return sorted list
     return sorted(list(all_tags))
 
+
 #--------------------------------
 # Read: GET -> Get Notes by Tags
 #--------------------------------
@@ -242,6 +281,45 @@ def get_notes_by_tag(tag_name: str) -> list[Note]:
             filtered.append(note)
     
     return filtered
+
+#--------------------------------
+# Read: GET -> Get all unique categories
+#--------------------------------
+# Homework Day 3
+@app.get("/categories")
+def list_categories() -> list[str]:
+    load_notes()
+
+    unique_categories = {}
+    for note in notes_db:
+        if note.category not in unique_categories:
+            unique_categories[note.category] = 1
+
+    # Collect unique categories
+    categories_list = []
+    for category in unique_categories:
+        categories_list.append(category)
+
+    # Return sorted list
+    return sorted(categories_list)
+
+
+#--------------------------------
+# Read: GET -> Get all Notes in category
+#--------------------------------
+# Homework Day 3
+@app.get("/categories/{category_name}/notes")
+def get_notes_by_category(category_name: str) -> list[Note]:
+    load_notes()
+
+    # Filter notes by category
+    filtered_notes = []
+    for note in notes_db:
+        if note.category == category_name:
+            filtered_notes.append(note)
+    
+    return filtered_notes
+
 
 #--------------------------------
 # Update: PUT -> Updating existing Note
@@ -274,6 +352,39 @@ def update_note(note_id: int, note_update: NoteCreate) -> Note:
         status_code=404,
         detail=f"Note with ID {note_id} not found"
     )
+
+#--------------------------------
+# Update: PATCH -> Partially update Note
+#--------------------------------
+# Homework Day 3
+@app.patch("/notes/{note_id}")
+def partial_update_note(note_id: int, note_update: NoteUpdate) -> Note:
+    """
+    Partially update a note (only provided fields)
+    Unlike PUT, PATCH only updates fields you provide
+    """
+    load_notes()
+
+    for i, note in enumerate(notes_db):
+        if note.id == note_id:
+            # Update only provided fields (Homework Day 3)
+            if note_update.title is not None:
+                note.title = note_update.title
+
+            if note_update.content is not None:
+                note.content = note_update.content
+
+            if note_update.category is not None:
+                note.category = note_update.category
+
+            if note_update.tags is not None:
+                note.tags = note_update.tags
+
+            notes_db[i] = note
+            save_notes(notes_db)
+            return note
+    
+    raise HTTPException(status_code=404, detail="Note not found")
 
 
 #--------------------------------
