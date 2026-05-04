@@ -62,5 +62,60 @@
       "demo"
     ],
     "created_at": "2026-05-03T15:23:21.586058"
+  },
+  {
+    "id": 10,
+    "title": "Uni Projekt",
+    "content": "API weiter programmieren",
+    "category": "school",
+    "tags": [
+      "coding",
+      "important"
+    ],
+    "created_at": "2026-05-03T16:10:17.041079"
+  },
+  {
+    "id": 11,
+    "title": "Kundentermin",
+    "content": "Pr\u00e4sentation vorbereiten",
+    "category": "work",
+    "tags": [
+      "client",
+      "meeting"
+    ],
+    "created_at": "2026-05-03T16:10:39.593089"
+  },
+  {
+    "id": 12,
+    "title": "Urlaub planen",
+    "content": "Fl\u00fcge und Hotel buchen",
+    "category": "personal",
+    "tags": [
+      "travel",
+      "important"
+    ],
+    "created_at": "2026-05-03T16:11:02.163822"
+  },
+  {
+    "id": 13,
+    "title": "Workout Plan",
+    "content": "Leg day im Gym, Fokus auf Maschinen",
+    "category": "health",
+    "tags": [
+      "fitness",
+      "routine"
+    ],
+    "created_at": "2026-05-03T16:11:27.224963"
+  },
+  {
+    "id": 14,
+    "title": "Geburtstagsgeschenk",
+    "content": "Ideen f\u00fcr Mama sammeln",
+    "category": "personal",
+    "tags": [
+      "family",
+      "important"
+    ],
+    "created_at": "2026-05-03T16:11:41.382094"
   }
 ]
