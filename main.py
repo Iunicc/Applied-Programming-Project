@@ -205,7 +205,9 @@ def list_notes(
     session: SessionDep,
     category: str = None,
     search: str = None,
-    tag: str = None
+    tag: str = None,
+    created_after: str = None,
+    created_before: str = None
 ) -> list[NoteResponse]:
     """List notes with filters"""
     
@@ -228,6 +230,12 @@ def list_notes(
     if tag:
         tag_lower = tag.lower()
         statement = statement.join(Note.tags).where(Tag.name == tag_lower)
+       
+    if created_after:
+        statement = statement.where(Note.created_at >= datetime.fromisoformat(created_after))
+
+    if created_before:
+        statement = statement.where(Note.created_at <= datetime.fromisoformat(created_before))
     
     # Execute query
     notes = session.exec(statement).all()
