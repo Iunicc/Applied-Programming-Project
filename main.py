@@ -138,9 +138,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Load existing notes when server starts
-#load_notes()
-
 
 ########################################
 # ENDPOINTS
@@ -199,6 +196,7 @@ def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
         tags=[tag.name for tag in db_note.tags],
         created_at=db_note.created_at.isoformat()
     )
+
 #--------------------------------
 # Read: GET -> Read Notes
 #--------------------------------
