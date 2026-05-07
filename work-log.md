@@ -229,28 +229,26 @@ Zuhause:
 ### Day 5
 
 #### 1. ✅ What did I accomplish?
-
-
-
-
-
+- Da ich krank war, habe ich Day 5 zuhause mit der Präsentation nachgearbeitet
+- Pydantic Validation genauer kennengelernt
+- Field Constraints für NoteCreate und NoteUpdate eingebaut
+- Validatoren für title, category und tags erstellt
+- mehrere gültige und ungültige Requests in /docs getestet
 
 ---
 
 #### 2. 🚧 What challenges did I face?
-
-
-
-
-
+- Unterschied zwischen Field, field_validator und model_validator war zuerst etwas verwirrend
+- Probleme mit Groß- und Kleinschreibung bei Kategorien
+- Fehler durch unterschiedliche Field Imports von Pydantic und SQLModel
 
 ---
 
 #### 3. 💡 How did I overcome them?
-
-
-
-
+- Präsentation Schritt für Schritt durchgearbeitet
+- Änderungen direkt im Code ausprobiert und über /docs getestet
+- Regex-Problem gelöst, indem die Kategorie erst im Validator normalisiert wird (value = value.lower())
+- beim Field-Import-Fehler ChatGPT zur Erklärung genutzt
 
 
 ---

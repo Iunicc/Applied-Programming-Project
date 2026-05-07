@@ -2,38 +2,125 @@
 # IMPORTS
 ########################################
 from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field as PydanticField
+from pydantic import field_validator, model_validator, ConfigDict
 from datetime import datetime, timezone
 datetime.now(timezone.utc).isoformat()
 import json
 from pathlib import Path
 from collections import Counter             # <- Homework Day 3
 from typing import Optional, Annotated                # <- Homework Day 3
-from sqlmodel import SQLModel, Field, Session, create_engine, Relationship, select, or_, col
+from sqlmodel import SQLModel, Field as SQLField, Session, create_engine, Relationship, select, or_, col
+from typing_extensions import Self
 
+
+########################################
+# ALLOWED CATEGORIES
+########################################
+ALLOWED_CATEGORIES = {
+    "work",
+    "personal",
+    "school",
+    "ideas",
+    "general"
+}
 
 ########################################
 # DATA MODELS
 ########################################
-class NoteUpdate(BaseModel):            # <- Homework Day 3
-    title: Optional[str] = None
-    content: Optional[str] = None
-    category: Optional[str] = None
-    tags: Optional[list[str]] = None
+class NoteUpdate(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        extra="forbid"
+    )
+
+    title: str | None = PydanticField(
+        default=None,
+        min_length=3,
+        max_length=100
+    )
+
+    content: str | None = PydanticField(
+        default=None,
+        min_length=1,
+        max_length=10000
+    )
+
+    category: str | None = PydanticField(
+        default=None,
+        min_length=2,
+        max_length=30,
+        #pattern=r"^[a-z]+$"
+    )
+
+    tags: list[str] | None = PydanticField(
+        default=None,
+        max_length=10
+    )
+
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, value: str | None) -> str | None:
+
+        if value is None:
+            return value
+
+        value = value.lower()
+
+        if value not in ALLOWED_CATEGORIES:
+            raise ValueError(
+                f"category must be one of {sorted(ALLOWED_CATEGORIES)}"
+            )
+
+        return value
+    
+    @field_validator("tags")
+    @classmethod
+    def clean_tags(cls, raw: list[str] | None) -> list[str] | None:
+
+        if raw is None:
+            return raw
+
+        cleaned = []
+        seen = set()
+
+        for tag in raw:
+            t = tag.strip().lower()
+
+            if not t:
+                raise ValueError(
+                    "tags must not be empty"
+                )
+
+            if len(t) < 2:
+                raise ValueError(
+                    "tags must have at least 2 characters"
+                )
+
+            if t in seen:
+                continue
+
+            seen.add(t)
+            cleaned.append(t)
+
+        return cleaned
+    
+
 
 #SQL
 class NoteTagLink(SQLModel, table=True):
-    note_id: Optional[int] = Field(default=None, foreign_key="notes.id", primary_key=True)
-    tag_id: Optional[int] = Field(default=None, foreign_key="tags.id", primary_key=True)
-    
+    note_id: Optional[int] = SQLField(default=None, foreign_key="notes.id", primary_key=True)
+    tag_id: Optional[int] = SQLField(default=None, foreign_key="tags.id", primary_key=True)
+
+
 class Note(SQLModel, table=True):
     __tablename__ = 'notes'
     
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = SQLField(default=None, primary_key=True)
     title: str
     content: str
     category: str
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = SQLField(default_factory=datetime.now)
     
     # Many-to-many relationship with Tag (implicit link table)
     tags: list["Tag"] = Relationship(back_populates="notes", link_model=NoteTagLink)
@@ -41,8 +128,20 @@ class Note(SQLModel, table=True):
 class Tag(SQLModel, table=True):
     __tablename__ = 'tags'
     
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(unique=True, index=True)  # Unique tag name
+    id: Optional[int] = SQLField(default=None, primary_key=True)
+    name: str = SQLField(
+    unique=True,
+    index=True,
+    min_length=2,
+    max_length=30,
+    regex=r"^[a-z0-9-]+$"
+) # Unique tag name
+    
+    @field_validator("name")
+    @classmethod
+    def clean_tag_name(cls, value: str) -> str:
+
+        return value.strip().lower()
     
     # Many-to-many relationship with Note (implicit link table)
     notes: list[Note] = Relationship(back_populates="tags", link_model=NoteTagLink)
@@ -56,11 +155,103 @@ SQLModel.metadata.create_all(engine)
 
 # API Input model
 class NoteCreate(BaseModel):
-    title: str
-    content: str
-    category: str
-    tags: list[str] = []
 
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        extra="forbid"
+    )
+
+    title: str = PydanticField(
+        min_length=3,
+        max_length=100
+    )
+
+    content: str = PydanticField(
+        min_length=1,
+        max_length=10000
+    )
+
+    category: str = PydanticField(
+        min_length=2,
+        max_length=30,
+        #pattern=r"^[a-z]+$"
+    )
+
+    tags: list[str] = PydanticField(
+        default_factory=list,
+        max_length=10
+    )
+
+    @field_validator("title")
+    @classmethod
+    def validate_title(cls, value: str) -> str:
+
+        value = value.strip()
+
+        if len(value) < 3:
+            raise ValueError(
+                "title must have at least 3 characters"
+            )
+
+        return value
+
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, value: str) -> str:
+
+        value = value.lower()
+
+        if value not in ALLOWED_CATEGORIES:
+            raise ValueError(
+                f"category must be one of {sorted(ALLOWED_CATEGORIES)}"
+            )
+
+        return value
+
+    @field_validator("tags")
+    @classmethod
+    def clean_tags(cls, raw: list[str]) -> list[str]:
+
+        cleaned = []
+        seen = set()
+
+        for tag in raw:
+
+            t = tag.strip().lower()
+
+            if not t:
+                raise ValueError(
+                    "tags must not be empty"
+                )
+
+            if len(t) < 2:
+                raise ValueError(
+                    "tags must have at least 2 characters"
+                )
+
+            if t in seen:
+                continue
+
+            seen.add(t)
+            cleaned.append(t)
+
+        return cleaned
+
+    @model_validator(mode="after")
+    def work_notes_need_work_tag(self) -> Self:
+
+        # model_validator nötig, weil category und tags gleichzeitig geprüft werden müssen
+
+        if self.category == "work" and "work" not in self.tags:
+
+            raise ValueError(
+                "work notes must include the 'work' tag"
+            )
+
+        return self
+    
+
+    
 # API Output model
 class NoteResponse(BaseModel):
     id: int
