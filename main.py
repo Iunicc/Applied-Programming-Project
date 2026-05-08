@@ -237,6 +237,7 @@ class NoteCreate(BaseModel):
 
         return cleaned
 
+'''
     @model_validator(mode="after")
     def work_notes_need_work_tag(self) -> Self:
 
@@ -249,7 +250,7 @@ class NoteCreate(BaseModel):
             )
 
         return self
-    
+   ''' 
 
     
 # API Output model
@@ -337,6 +338,16 @@ app = FastAPI(
 # /tests /courses -> Plural
 
 #--------------------------------
+# Root endpoint
+#--------------------------------
+@app.get("/")
+def root():
+    return {
+        "message": "Notes API",
+        "version": "1.0.0"
+    }
+
+#--------------------------------
 # Create: POST -> Create Note
 #--------------------------------
 @app.post("/notes", status_code=201)
@@ -397,8 +408,8 @@ def list_notes(
     category: str = None,
     search: str = None,
     tag: str = None,
-    created_after: str = None,
-    created_before: str = None
+    created_after: datetime | None = None,
+    created_before: datetime | None = None
 ) -> list[NoteResponse]:
     """List notes with filters"""
     
@@ -423,10 +434,10 @@ def list_notes(
         statement = statement.join(Note.tags).where(Tag.name == tag_lower)
        
     if created_after:
-        statement = statement.where(Note.created_at >= datetime.fromisoformat(created_after))
+        statement = statement.where(Note.created_at >= created_after)
 
     if created_before:
-        statement = statement.where(Note.created_at <= datetime.fromisoformat(created_before))
+        statement = statement.where(Note.created_at <= created_before)
     
     # Execute query
     notes = session.exec(statement).all()
@@ -464,7 +475,7 @@ def get_notes_stats(session: SessionDep):
         tags_count[tag.name] = len(tag.notes)
 
     top_tags = []
-    for tag, count in tags_count.most_common(10):
+    for tag, count in tags_count.most_common(5):
         top_tags.append({
             "tag": tag,
             "count": count
