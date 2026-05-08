@@ -256,29 +256,38 @@ Zuhause:
 ### Day 6
 
 #### 1. ✅ What did I accomplish?
-
-
-
-
-
+- Da ich arbeiten musste und keine Aufnahme gefunden habe, habe ich Day 6 selbstständig mit der Präsentation nachgearbeitet
+- class_based_decorator.py erstellt
+- icecream installiert und kurz angeschaut
+- Test-Suite heruntergeladen und ausgeführt
+- gelernt, wie man große Fehlermengen systematisch analysiert
+- mehrere Probleme in meiner API gefunden und angepasst:
+- Root Endpoint ergänzt
+- Date Validation verbessert
+- Statistik Endpoint angepasst
+- verstanden, wie stark viele Tests und Features zusammenhängen
+- gemerkt, wie viele Fehler zusammenhängen und auch verschwinden, wenn ein Problem gelöst wird
 
 ---
 
 #### 2. 🚧 What challenges did I face?
-
-
-
-
-
+- zuerst überfordert von der Menge an Fehlermeldungen
+- Unsicherheit, ob ich die Tests oder meine API anpassen soll
+- viele Fehler durch Validation-Regel mit dem work-Tag
+- Probleme bei Date Filtering (created_after, created_before)
+- Fehlercodes und Assertions teilweise schwer zu lesen
 
 ---
 
 #### 3. 💡 How did I overcome them?
-
-
-
-
-
+- Fehler Schritt für Schritt analysiert
+- Testnamen gelesen, Testcode verstehen, in main.py korrespondierenden Code gesucht und versucht zu verstehen, wo das Problem liegt
+- bei work-Tag Fehler die Testdaten mit meiner Validation verglichen und den Validator auskommentiert
+- created_after Problem im Code eingegrenzt und verstanden, dass datetime.fromisoformat() fehlschlägt
+→ zuerst eigene Lösung  ausprobiert, nach Scheitern mit Hilfe von ChatGPT eine einfachere Lösung mit datetime | None = None umgesetzt und erklären lassen
+- letzten Fehler gelöst, indem ich den Test genauer gelesen habe:
+→ Test erwartet maximal 5 Top Tags
+→ im Code waren aber Top 10 eingestellt
 
 ---
 
