@@ -18,7 +18,7 @@
 '''
 
 #{"reason":"My broomstick is in the shop (you know how unreliable those are)."}
-'''
+
 import streamlit as st
 import requests
 
@@ -62,5 +62,54 @@ st.write(st.session_state["text"])
 
 with st.expander('session state'):
     st.write(st.session_state)
-'''
 
+#------------------------------------------
+# Day 7: Frontend
+
+########################################
+# IMPORTS
+########################################
+import streamlit as st
+import requests
+
+
+########################################
+# URL
+########################################
+URL = "http://127.0.0.1:8000"
+
+########################################
+# FUNCTION 1
+########################################
+#--------------------------------
+# Load Notes
+#--------------------------------
+def load_notes():
+    response = requests.get(f"{URL}/notes")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error("Notes could not be loaded")
+        return []  
+
+
+#--------------------------------
+# Notes List
+#--------------------------------
+notes = load_notes()
+#st.write(notes)
+
+note_titles = []
+
+for note in notes:
+    note_titles.append(note["title"])
+
+
+select_note = st.selectbox(
+    "All Notes",
+    (note_titles),
+    index=None,
+    placeholder="Select Note",
+)
+
+st.write("You selected:", select_note)
