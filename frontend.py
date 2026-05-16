@@ -102,7 +102,7 @@ notes = load_notes()
 note_titles = []
 
 for note in notes:
-    note_titles.append(note["title"])
+    note_titles.append(note["title"] + " " + note["created_at"])
 
 
 select_note = st.selectbox(
@@ -112,4 +112,13 @@ select_note = st.selectbox(
     placeholder="Select Note",
 )
 
-st.write("You selected:", select_note)
+for note in notes:
+    if (note["title"] + " " + note["created_at"] == select_note):
+        st.write("Titel:", note["title"])
+        st.write("ID:", note["id"])
+        st.write("Content:", note["content"])
+        st.write("Category:", note["category"])
+        st.write("Tags:", note["tags"])
+        st.write("Created at:", note["created_at"])
+
+#st.write("You selected:", select_note)
