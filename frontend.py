@@ -1,39 +1,25 @@
-'''
-- Streamlit intsallieren
-- Streamlit App "Hello, World!" erstellen und testen
-- "Say no" - App als erster Test erstellen
-    - API Documentation: https://github.com/hotheadhacker/no-as-a-service
-    - API Endpoint: https://naas.isalman.dev/no
-    - Button in Streamlit, der bei Klick eine Anfrage an den API Endpoint sendet und die Antwort anzeigt
-
-- TO DOs Nachmittag:
-    - Streamlit App mit 2 Funktionen von Notizen API
-    - Funktion 1: Alle Notizen anzeigen
-        - Liste von Titeln von Notizen anzeigen
-        - Möglichkeit zu einem Titel den Inhalt, Tags, Category, etc. anzuzeigen
-    - Funktion 2: Neue Notiz erstellen (Formular mit Titel und Inhalt, Button)
-        - Erstellen einer neuen Notiz (Titel, Inhalt, Tags, Category)
-        - Neu erstellte Notiz soll in Liste auftauchen
-
-'''
-
 ########################################
 # IMPORTS
 ########################################
 import streamlit as st
 import requests
 
-if "form_key" not in st.session_state:
-    st.session_state["form_key"] = 0
 
 ########################################
 # URL
 ########################################
 URL = "http://127.0.0.1:8000"
 
+
 ########################################
 # FUNCTIONS
 ########################################
+#--------------------------------
+# Session State
+#--------------------------------
+if "form_key" not in st.session_state:
+    st.session_state["form_key"] = 0
+
 #--------------------------------
 # Load Notes
 #--------------------------------
@@ -49,6 +35,9 @@ def load_notes():
 #--------------------------------
 # Notes List
 #--------------------------------
+st.title("_My_ :primary[Notes]")
+st.header("View Notes", divider="yellow")
+
 notes = load_notes()
 notes.sort(key=lambda note: note["created_at"], reverse=True)
 
@@ -76,6 +65,8 @@ for note in notes:
 #--------------------------------
 # Write Notes
 #--------------------------------
+st.header("Write new Note", divider="yellow")
+
 # Text Input
 title = st.text_input("Title", key=f"title_input_{st.session_state['form_key']}")
 content = st.text_area("Content", key=f"content_input_{st.session_state['form_key']}")
@@ -92,9 +83,8 @@ category = st.selectbox(
     key=f"category_input_{st.session_state['form_key']}"
 )
 
-
 # Submit Button
-submitted = st.button("Submit Note", type="primary")
+submitted = st.button("Submit Note", type="primary", width="stretch")
 
 def post_note():
     if submitted:
