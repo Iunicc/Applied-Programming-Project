@@ -59,14 +59,13 @@ for note in notes:
     if note["id"] == select_note_id:
         date = note["created_at"].split("T")[0]
 
-        st.subheader(note["title"])
-        #st.write("Titel:", note["title"])
-        st.write("ID:", note["id"])
-        st.write("Content:", note["content"])
-        st.write("Category:", note["category"])
-        st.write("Tags:", ", ".join(note["tags"]))
-        #st.write("Created at:", note["created_at"])
-        st.caption(f"Created at: {date}")
+        with st.container(border=True):
+            st.subheader(note["title"])
+            st.text(note["content"])
+            st.caption(f"ID: {note["id"]}")
+            st.caption("Tags: " + ", ".join(note["tags"]))
+            st.caption(f"Category: {note["category"]}")
+            st.caption(f"Created at: {date}")
         
 
 #--------------------------------
