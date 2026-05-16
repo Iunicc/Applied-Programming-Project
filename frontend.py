@@ -17,61 +17,14 @@
 
 '''
 
-#{"reason":"My broomstick is in the shop (you know how unreliable those are)."}
-
-import streamlit as st
-import requests
-
-URL = "https://naas.isalman.dev/no"
-
-response = requests.get(URL)
-
-#st.write("Hello, World!")
-
-
-def request_no():
-    response = requests.get(URL)
-    response_json = response.json()
-    return response_json["reason"]
-
-# Initialization
-if 'text1' not in st.session_state:
-    st.session_state['text1'] = request_no()
-    print("init Text1")
-
-if 'text' not in st.session_state:
-    st.session_state['text'] = request_no()
-    print("init Text")
-
-
-name = st.text_input('Name', placeholder="Hier Name eingeben...")
-st.write(name)
-
-
-if st.button("Neuer Text1"):
-    st.session_state['text1'] = request_no()
-
-st.write(st.session_state["text1"])
-
-
-if st.button("Neuer Text"):
-    st.session_state['text'] = request_no()
-
-st.write(st.session_state["text"])
-
-
-with st.expander('session state'):
-    st.write(st.session_state)
-
-#------------------------------------------
-# Day 7: Frontend
-
 ########################################
 # IMPORTS
 ########################################
 import streamlit as st
 import requests
 
+if "form_key" not in st.session_state:
+    st.session_state["form_key"] = 0
 
 ########################################
 # URL
@@ -97,13 +50,12 @@ def load_notes():
 # Notes List
 #--------------------------------
 notes = load_notes()
-#st.write(notes)
+notes.sort(key=lambda note: note["created_at"], reverse=True)
 
 note_titles = []
 
 for note in notes:
     note_titles.append(note["title"] + " " + note["created_at"])
-
 
 select_note = st.selectbox(
     "All Notes",
@@ -121,20 +73,25 @@ for note in notes:
         st.write("Tags:", note["tags"])
         st.write("Created at:", note["created_at"])
 
-#st.write("You selected:", select_note)
-
 #--------------------------------
 # Write Notes
 #--------------------------------
 # Text Input
-title = st.text_input("Title")
-content = st.text_input("Content")
-tags = st.text_input("Tags", placeholder="Type it like this: urgent, project, test")
-category = st.selectbox("Category",
+title = st.text_input("Title", key=f"title_input_{st.session_state['form_key']}")
+content = st.text_area("Content", key=f"content_input_{st.session_state['form_key']}")
+tags = st.text_input(
+    "Tags",
+    placeholder="Type it like this: urgent, project, test",
+    key=f"tags_input_{st.session_state['form_key']}"
+)
+category = st.selectbox(
+    "Category",
     ("work", "personal", "school", "ideas", "general"),
     index=None,
     placeholder="Select Category",
+    key=f"category_input_{st.session_state['form_key']}"
 )
+
 
 # Submit Button
 submitted = st.button("Submit Note", type="primary")
@@ -158,10 +115,11 @@ def post_note():
         # Notiz posten
         response = requests.post(f"{URL}/notes", json=note_data)
         if response.status_code == 201:
-            return response.json()
-        else:
-            st.error("Note could not be submitted")
-            return [] 
-        
+            st.session_state["form_key"] += 1
+            st.rerun()
+                    
 if submitted:
     post_note()
+   
+
+
