@@ -79,7 +79,7 @@ import requests
 URL = "http://127.0.0.1:8000"
 
 ########################################
-# FUNCTION 1
+# FUNCTIONS
 ########################################
 #--------------------------------
 # Load Notes
@@ -122,3 +122,46 @@ for note in notes:
         st.write("Created at:", note["created_at"])
 
 #st.write("You selected:", select_note)
+
+#--------------------------------
+# Write Notes
+#--------------------------------
+# Text Input
+title = st.text_input("Title")
+content = st.text_input("Content")
+tags = st.text_input("Tags", placeholder="Type it like this: urgent, project, test")
+category = st.selectbox("Category",
+    ("work", "personal", "school", "ideas", "general"),
+    index=None,
+    placeholder="Select Category",
+)
+
+# Submit Button
+submitted = st.button("Submit Note", type="primary")
+
+def post_note():
+    if submitted:
+        tags_list = []
+
+        if tags:
+            for tag in tags.split(","):
+                tags_list.append(tag.strip())
+
+        # Daten übergeben
+        note_data = {
+        "title": title,
+        "content": content,
+        "category": category,
+        "tags": tags_list
+        }
+
+        # Notiz posten
+        response = requests.post(f"{URL}/notes", json=note_data)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            st.error("Note could not be submitted")
+            return [] 
+        
+if submitted:
+    post_note()
