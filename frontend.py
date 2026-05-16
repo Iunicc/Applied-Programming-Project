@@ -41,26 +41,33 @@ st.header("View Notes", divider="yellow")
 notes = load_notes()
 notes.sort(key=lambda note: note["created_at"], reverse=True)
 
-note_titles = []
+note_ids = []
 
 for note in notes:
-    note_titles.append(note["title"] + " " + note["created_at"])
+    note_ids.append(note["id"])
 
-select_note = st.selectbox(
+select_note_id = st.selectbox(
     "All Notes",
-    (note_titles),
+    note_ids,
+    format_func=lambda note_id: next(
+        note["title"] for note in notes if note["id"] == note_id
+    ),
     index=None,
     placeholder="Select Note",
 )
-
 for note in notes:
-    if (note["title"] + " " + note["created_at"] == select_note):
-        st.write("Titel:", note["title"])
+    if note["id"] == select_note_id:
+        date = note["created_at"].split("T")[0]
+
+        st.subheader(note["title"])
+        #st.write("Titel:", note["title"])
         st.write("ID:", note["id"])
         st.write("Content:", note["content"])
         st.write("Category:", note["category"])
-        st.write("Tags:", note["tags"])
-        st.write("Created at:", note["created_at"])
+        st.write("Tags:", ", ".join(note["tags"]))
+        #st.write("Created at:", note["created_at"])
+        st.caption(f"Created at: {date}")
+        
 
 #--------------------------------
 # Write Notes
