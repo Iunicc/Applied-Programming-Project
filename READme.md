@@ -33,6 +33,8 @@ The app allows users to create, view, update, filter and delete notes. Each note
 - pytest
 - uv
 
+This project was developed and tested with Python 3.13
+
 ---
 
 ## Project Structure
