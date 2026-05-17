@@ -2,16 +2,11 @@
 # IMPORTS
 ########################################
 from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel, Field as PydanticField
-from pydantic import field_validator, model_validator, ConfigDict
-from datetime import datetime, timezone
-datetime.now(timezone.utc).isoformat()
-import json
-from pathlib import Path
-from collections import Counter             # <- Homework Day 3
-from typing import Optional, Annotated                # <- Homework Day 3
+from pydantic import BaseModel, Field as PydanticField, field_validator, ConfigDict
+from datetime import datetime
+from collections import Counter             
+from typing import Optional, Annotated              
 from sqlmodel import SQLModel, Field as SQLField, Session, create_engine, Relationship, select, or_, col
-from typing_extensions import Self
 
 
 ########################################
@@ -35,27 +30,26 @@ class NoteUpdate(BaseModel):
     )
 
     title: str | None = PydanticField(
-        default=None,
-        min_length=3,
-        max_length=100
+        default = None,
+        min_length = 3,
+        max_length = 100
     )
 
     content: str | None = PydanticField(
-        default=None,
-        min_length=1,
-        max_length=10000
+        default = None,
+        min_length = 1,
+        max_length = 10000
     )
 
     category: str | None = PydanticField(
-        default=None,
-        min_length=2,
-        max_length=30,
-        #pattern=r"^[a-z]+$"
+        default = None,
+        min_length = 2,
+        max_length = 30,
     )
 
     tags: list[str] | None = PydanticField(
-        default=None,
-        max_length=10
+        default = None,
+        max_length = 10
     )
 
     @field_validator("category")
@@ -71,7 +65,6 @@ class NoteUpdate(BaseModel):
             raise ValueError(
                 f"category must be one of {sorted(ALLOWED_CATEGORIES)}"
             )
-
         return value
     
     @field_validator("tags")
@@ -122,8 +115,9 @@ class Note(SQLModel, table=True):
     category: str
     created_at: datetime = SQLField(default_factory=datetime.now)
     
-    # Many-to-many relationship with Tag (implicit link table)
+    # Many-to-many relationship with Tag via NoteTagLink
     tags: list["Tag"] = Relationship(back_populates="notes", link_model=NoteTagLink)
+
 
 class Tag(SQLModel, table=True):
     __tablename__ = 'tags'
@@ -143,8 +137,8 @@ class Tag(SQLModel, table=True):
 
         return value.strip().lower()
     
-    # Many-to-many relationship with Note (implicit link table)
-    notes: list[Note] = Relationship(back_populates="tags", link_model=NoteTagLink)
+    # Many-to-many relationship with Note via NoteTagLink
+    notes: list[Note] = Relationship(back_populates = "tags", link_model=NoteTagLink)
 
 # Create database engine
 engine = create_engine("sqlite:///notes.db")
@@ -157,29 +151,28 @@ SQLModel.metadata.create_all(engine)
 class NoteCreate(BaseModel):
 
     model_config = ConfigDict(
-        str_strip_whitespace=True,
-        extra="forbid"
+        str_strip_whitespace = True,
+        extra = "forbid"
     )
 
     title: str = PydanticField(
-        min_length=3,
-        max_length=100
+        min_length = 3,
+        max_length = 100
     )
 
     content: str = PydanticField(
-        min_length=1,
-        max_length=10000
+        min_length = 1,
+        max_length = 10000
     )
 
     category: str = PydanticField(
         min_length=2,
         max_length=30,
-        #pattern=r"^[a-z]+$"
     )
 
     tags: list[str] = PydanticField(
-        default_factory=list,
-        max_length=10
+        default_factory = list,
+        max_length = 10
     )
 
     @field_validator("title")
@@ -237,21 +230,6 @@ class NoteCreate(BaseModel):
 
         return cleaned
 
-'''
-    @model_validator(mode="after")
-    def work_notes_need_work_tag(self) -> Self:
-
-        # model_validator nötig, weil category und tags gleichzeitig geprüft werden müssen
-
-        if self.category == "work" and "work" not in self.tags:
-
-            raise ValueError(
-                "work notes must include the 'work' tag"
-            )
-
-        return self
-   ''' 
-
     
 # API Output model
 class NoteResponse(BaseModel):
@@ -267,52 +245,10 @@ class NoteResponse(BaseModel):
         
 
 ########################################
-# STORAGE
+# DATABASE SESSION
 ########################################
-NOTES_FILE = Path("data/notes.json")
-notes_db = []
-note_id_counter = 1
-
-
-########################################
-# FILE FUNCTIONS
-########################################
-#--------------------------------
-# Load notes from file
-#--------------------------------
-def load_notes():
-    """Load notes from JSON file"""
-    global notes_db, note_id_counter
-    
-    if NOTES_FILE.exists():
-        with open(NOTES_FILE, 'r') as f:
-            data = json.load(f)
-            notes_db = [
-                Note(**{**note, "category": note.get("category", "default")})
-                for note in data
-            ]
-            
-            # Set counter to max ID + 1
-            if notes_db:
-                note_id_counter = max(note.id for note in notes_db) + 1
-
-#--------------------------------
-# Save notes from file
-#--------------------------------
-def save_notes():
-    """Save notes to JSON file"""
-    NOTES_FILE.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(NOTES_FILE, 'w') as f:
-        # Convert Note objects to dicts
-        notes_data = [note.dict() for note in notes_db]
-        json.dump(notes_data, f, indent=2)
-
-#--------------------------------
-# New database session
-#--------------------------------
 def get_session():
-    """Create a new database session for each request"""
+    # Create a new database session for each request
     with Session(engine) as session:
         yield session
 
@@ -325,21 +261,20 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ########################################
 # Create FastAPI App
 app = FastAPI(
-    title="Note Taking API",
-    description="Simple note management",
-    version="1.0.0"
+    title = "Note Taking API",
+    description = "Simple note management",
+    version = "1.0.0"
 )
 
 
 ########################################
 # ENDPOINTS
 ########################################
-# Reihenfolge wichtig
-# /tests /courses -> Plural
+# Order is important
 
-#--------------------------------
+#-------------------------------------
 # Root endpoint
-#--------------------------------
+#-------------------------------------
 @app.get("/")
 def root():
     return {
@@ -347,14 +282,14 @@ def root():
         "version": "1.0.0"
     }
 
-#--------------------------------
+
+#-------------------------------------
 # Create: POST -> Create Note
-#--------------------------------
+#-------------------------------------
 @app.post("/notes", status_code=201)
 def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
-    """Create a new note in database"""
     
-    # Create note
+    # Create a new note in database
     db_note = Note(
         title=note.title,
         content=note.content,
@@ -399,9 +334,10 @@ def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
         created_at=db_note.created_at.isoformat()
     )
 
-#--------------------------------
+
+#-------------------------------------
 # Read: GET -> Read Notes
-#--------------------------------
+#-------------------------------------
 @app.get("/notes")
 def list_notes(
     session: SessionDep,
@@ -411,7 +347,7 @@ def list_notes(
     created_after: datetime | None = None,
     created_before: datetime | None = None
 ) -> list[NoteResponse]:
-    """List notes with filters"""
+    #List notes with filters
     
     # Build query
     statement = select(Note)
@@ -455,9 +391,10 @@ def list_notes(
         for n in notes
     ]
 
-#--------------------------------
+
+#-------------------------------------
 # Read: GET -> Get Stats about Notes
-#--------------------------------
+#-------------------------------------
 @app.get("/notes/stats")
 def get_notes_stats(session: SessionDep):
     notes = session.exec(select(Note)).all()
@@ -488,9 +425,10 @@ def get_notes_stats(session: SessionDep):
         "unique_tags_count": len(tags)
     }
 
-#--------------------------------
+
+#-------------------------------------
 # Read: GET -> Get Notes by ID
-#--------------------------------
+#-------------------------------------
 @app.get("/notes/{note_id}")
 def get_note(note_id: int, session: SessionDep) -> NoteResponse:
     note = session.get(Note, note_id)
@@ -507,9 +445,10 @@ def get_note(note_id: int, session: SessionDep) -> NoteResponse:
         created_at=note.created_at.isoformat()
     )
 
-#--------------------------------
+
+#-------------------------------------
 # Read: GET -> Get Notes by Category
-#--------------------------------
+#-------------------------------------
 @app.get("/notes/category/{category}")
 def get_notes_by_category(category: str, session: SessionDep) -> list[NoteResponse]:
     statement = select(Note).where(Note.category == category)
@@ -527,9 +466,10 @@ def get_notes_by_category(category: str, session: SessionDep) -> list[NoteRespon
         for note in notes
     ]
 
-#--------------------------------
-# Read: GET -> Get all exisitng Tags
-#--------------------------------
+
+#-------------------------------------
+# Read: GET -> Get all existing Tags
+#-------------------------------------
 @app.get("/tags")
 def list_tags(session: SessionDep) -> list[str]:
     """Get all unique tags from the Tag table"""
@@ -538,12 +478,13 @@ def list_tags(session: SessionDep) -> list[str]:
     
     return sorted([tag.name for tag in tags])
 
-#--------------------------------
+
+#-------------------------------------
 # Read: GET -> Get Notes by Tags
-#--------------------------------
+#-------------------------------------
 @app.get("/tags/{tag_name}/notes")
 def get_notes_by_tag(tag_name: str, session: SessionDep) -> list[NoteResponse]:
-    """Get all notes with specific tag"""
+    # Get all notes with specific tag
     
     # Find the tag
     tag_lower = tag_name.lower()
@@ -565,9 +506,10 @@ def get_notes_by_tag(tag_name: str, session: SessionDep) -> list[NoteResponse]:
         for note in tag.notes
     ]
 
-#--------------------------------
-# Read: GET -> Get all unique categories
-#--------------------------------
+
+#-------------------------------------
+# Read: GET -> Get unique categories
+#-------------------------------------
 @app.get("/categories")
 def list_categories(session: SessionDep) -> list[str]:
     notes = session.exec(select(Note)).all()
@@ -583,9 +525,10 @@ def list_categories(session: SessionDep) -> list[str]:
 
     return sorted(categories_list)
 
-#--------------------------------
+
+#-------------------------------------
 # Read: GET -> Get all Notes in category
-#--------------------------------
+#-------------------------------------
 @app.get("/categories/{category_name}/notes")
 def get_notes_by_category_resource(category_name: str, session: SessionDep) -> list[NoteResponse]:
     statement = select(Note).where(Note.category == category_name)
@@ -722,75 +665,3 @@ def delete_note(note_id: int, session: SessionDep):
     session.delete(note)
     session.commit()
     return
-
-########################################
-# ÜBUNGEN
-########################################
-#--------------------------------
-# Hello World + Hausaufgabe (Day 1)
-#--------------------------------
-'''
-app = FastAPI()
-
-@app.get("/")
-def root():
-    return {"message": "Hello, World!"}
-
-#@=Decorator /name (name)=kann eigenen namen angeben, wenn name angegeben wird läuft Funktion darunter durch
-@app.get("/name/{name}")
-def greet_name(name: str):
-    return {"message": f"Hello,{name}!"} #IP/name/Manuel -> Ausgabe im Browser
-
-#Aufgabe: Weiteren Endpunkt bauen:
-@app.get("/zahl/{zahl}")
-def add_one(zahl: int):
-    return {zahl +1}
-'''
-
-#--------------------------------
-# Path & Query Parameters (Day 3)
-#--------------------------------
-# Path: Bestimmter vorgegebener Pfad z.B. /notes/note_id
-# Query Parameters: Resultate filtern oder modifizieren z.B. /notes?note_id=1
- 
-@app.get("/queryparameters")
-def query_parameters(param1: str = None, param2: int = None) -> dict:
-    namen = ['martin', 'sophia', 'michael', 'emma', 'maria', 'mathias', 'johannes', 'laura', 'mara']
-    if not param1:
-        return{"namen": namen}
-    
-    namen_gefiltert = []
-    for name in namen:
-        if param1 is None or param1 in name:
-            namen_gefiltert.append(name)
-
-    return {
-        "param1": param1,
-        "param2": param2,
-        "namen": namen_gefiltert
-    }
-
-#Note anlegen endpunkt ändern -> in Datenbank schreiben und rauslesen
-
-#---------------------------------
-# Path Parameters (Day 3)
-#---------------------------------
-# Practice Endpoint Order
-@app.get("/test/123")
-def test_fixed():
-    return {
-        "fixed message": "Hallo 123"
-        }
-
-@app.get("/test/{value}")
-def test_value(value: str):
-    return {
-        "value": value
-    }
-
-@app.get("/test/{value}/test2/{value2}")
-def test_test2_value(value: str, value2: str):
-    return {
-        "value": value,
-        "value2": value2
-    }
