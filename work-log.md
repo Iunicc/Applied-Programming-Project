@@ -386,6 +386,7 @@ Projekt für Abgabe vorbereitet:
 → unnötigen alten Code gelöscht (z.B. Übungen, Code für json-version)
 → versucht alles einheitlicher und übersichtlicher zu strukturieren
 → Ordnerstruktur überprüft
+- README mit Kommilitonen besprochen und noch detaillierter angepasst
 
 ---
 
