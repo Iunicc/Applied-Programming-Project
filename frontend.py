@@ -37,6 +37,7 @@ def load_notes():
 # App Title
 st.title("_My_ :primary[Notes]")
 
+
 #--------------------------------
 # Notes List
 #--------------------------------

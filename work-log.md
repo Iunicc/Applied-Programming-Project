@@ -322,6 +322,7 @@ Funktion 2 – Neue Notes erstellen:
 #### 3. 💡 How did I overcome them?
 - viel mit der Streamlit Dokumentation gearbeitet, Beispielcodes getestet und für mich angepasst
 - Funktionen Schritt für Schritt aufgebaut und zwischendrin nachgedacht, statt alles gleichzeitig umzusetzen (hatte das erste mal so richtig das Gefühl, einen eigenen Flow fürs Funktionen schreiben zu haben, dank der Übungen der Vortage)
+- einmal auch mit einem Kommilitonen ausgetauscht zum Aufbau des Frontends
 - bei gleichen Titeln:
 → zusätzlichen Vergleich über mit Datum ergänzt
 - Datumsdarstellung verbessert → Datum mit .split("T") gekürzt (Dafür ChatGPT gefragt und Code erklären lassen)

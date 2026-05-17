@@ -20,6 +20,7 @@ ALLOWED_CATEGORIES = {
     "general"
 }
 
+
 ########################################
 # DATA MODELS
 ########################################
@@ -98,7 +99,6 @@ class NoteUpdate(BaseModel):
 
         return cleaned
     
-
 
 #SQL
 class NoteTagLink(SQLModel, table=True):

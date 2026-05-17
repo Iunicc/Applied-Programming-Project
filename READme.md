@@ -39,6 +39,8 @@ The app allows users to create, view, update, filter and delete notes. Each note
 
 ```text
 .
+├── .streamlit/
+│   └── config.toml
 ├── main.py
 ├── frontend.py
 ├── work-log.md
