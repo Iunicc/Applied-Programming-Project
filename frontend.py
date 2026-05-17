@@ -31,11 +31,16 @@ def load_notes():
         st.error("Notes could not be loaded")
         return []  
 
+########################################
+# INTERFACE
+########################################
+# App Title
+st.title("_My_ :primary[Notes]")
 
 #--------------------------------
 # Notes List
 #--------------------------------
-st.title("_My_ :primary[Notes]")
+# Header View Notes
 st.header("View Notes", divider="yellow")
 
 notes = load_notes()
@@ -71,6 +76,7 @@ for note in notes:
 #--------------------------------
 # Write Notes
 #--------------------------------
+# Header Write New Notes
 st.header("Write new Note", divider="yellow")
 
 # Text Input
@@ -78,7 +84,7 @@ title = st.text_input("Title", key=f"title_input_{st.session_state['form_key']}"
 content = st.text_area("Content", key=f"content_input_{st.session_state['form_key']}")
 tags = st.text_input(
     "Tags",
-    placeholder="Type it like this: urgent, project, test",
+    placeholder="e.g. urgent, project, test",
     key=f"tags_input_{st.session_state['form_key']}"
 )
 category = st.selectbox(
@@ -100,7 +106,6 @@ def post_note():
             for tag in tags.split(","):
                 tags_list.append(tag.strip())
 
-        # Daten übergeben
         note_data = {
         "title": title,
         "content": content,
@@ -108,7 +113,6 @@ def post_note():
         "tags": tags_list
         }
 
-        # Notiz posten
         response = requests.post(f"{URL}/notes", json=note_data)
         if response.status_code == 201:
             st.session_state["form_key"] += 1
