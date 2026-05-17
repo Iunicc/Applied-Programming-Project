@@ -138,11 +138,11 @@ http://localhost:8501
 ```
 The Streamlit frontend can:
 
-load notes from the FastAPI backend
-display notes inside a dropdown menu
-show all note details
-create new notes
-sort notes by creation date
+- load notes from the FastAPI backend
+- display notes inside a dropdown menu
+- show all note details
+- create new notes
+
 The frontend communicates with the backend using:
 
 ```python
