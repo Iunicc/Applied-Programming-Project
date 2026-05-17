@@ -65,8 +65,6 @@ pytest
 
 - `main.py` → FastAPI backend and database logic
 - `frontend.py` → Streamlit frontend
-- `test_main.py` → automated tests
-- `work-log.md` → documentation of the development process
 - `notes.db` → SQLite database file
 
 ---
